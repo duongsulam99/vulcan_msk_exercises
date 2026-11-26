@@ -1,0 +1,948 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Hands Việt · Mô phỏng 18 bài tập & vị trí vòng</title>
+  <style>
+    :root {
+      --paper: #f4f7f6; --surface: #fff; --ink: #183833; --subtle: #59706a;
+      --line: #dce6e2; --teal: #137768; --teal-light: #e9f5ef;
+      --thigh: #7755b7; --thigh-light: #f2edf9; --shank: #187f90; --shank-light: #e7f4f7;
+      --angle: #c27222; --angle-light: #fff3e5; --shadow: 0 12px 40px #214b3e09;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      color: var(--ink); background: var(--paper); font-synthesis: none;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #137768; outline-offset: 4px; }
+    button:disabled { cursor: default; opacity: .55; }
+    h1, h2, h3, p { margin: 0; }
+    .page { max-width: 1500px; margin: auto; padding: 0 44px 48px; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 26px 0; border-bottom: 1px solid var(--line); }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark { width: 42px; height: 42px; border-radius: 14px; background: var(--teal); color: white; display: grid; place-items: center; font-weight: 700; letter-spacing: -1px; }
+    .brand-name { font-size: 18px; font-weight: 700; }
+    .brand-sub { font-size: 11px; letter-spacing: 1.5px; color: var(--subtle); margin-top: 4px; }
+    .top-actions, .heading-meta, .legend, .button-row, .section-top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .tag { display: inline-flex; align-items: center; gap: 6px; padding: 7px 11px; border-radius: 8px; font-size: 12px; font-weight: 600; background: var(--teal-light); color: var(--teal); }
+    .tag.proposal { background: transparent; color: var(--subtle); padding: 0; }
+    .button { background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 10px; min-height: 42px; padding: 10px 16px; font-weight: 600; font-size: 13px; }
+    .button:hover { background: #eef4f1; }
+    .button.primary { background: var(--teal); border-color: var(--teal); color: white; }
+    .button.primary:hover { background: #0d6256; }
+    .intro { padding: 34px 0 28px; display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; }
+    .eyebrow { color: var(--teal); font-size: 11px; letter-spacing: 1.8px; font-weight: 700; text-transform: uppercase; margin-bottom: 12px; }
+    h1 { font-size: clamp(28px, 3vw, 42px); line-height: 1.15; letter-spacing: -1.4px; font-weight: 650; }
+    .intro p { color: var(--subtle); max-width: 650px; font-size: 14px; line-height: 1.7; margin-top: 13px; }
+    .counts { display: flex; gap: 30px; flex-shrink: 0; }
+    .count strong { display: block; font-size: 30px; font-weight: 600; letter-spacing: -1px; }
+    .count span { display: block; color: var(--subtle); font-size: 12px; margin-top: 5px; }
+    .workspace { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 22px; align-items: start; }
+    .exercise-nav { padding: 10px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); }
+    .nav-phase { padding: 17px 12px 10px; color: var(--subtle); font-size: 11px; letter-spacing: 1.2px; font-weight: 700; text-transform: uppercase; }
+    .exercise-button { width: 100%; display: flex; align-items: center; gap: 10px; padding: 13px 10px; min-height: 62px; text-align: left; border: 0; border-radius: 12px; background: transparent; color: var(--ink); margin: 3px 0; }
+    .exercise-button:hover { background: #f2f7f4; }
+    .exercise-button[aria-pressed="true"] { background: var(--teal-light); }
+    .nav-number { width: 28px; height: 28px; display: grid; place-items: center; background: #f0f4f2; border-radius: 9px; font-size: 11px; font-weight: 600; flex-shrink: 0; }
+    .exercise-button[aria-pressed="true"] .nav-number { background: var(--teal); color: white; }
+    .nav-name { display: block; font-size: 12px; font-weight: 600; line-height: 1.45; }
+    .nav-mode { display: block; font-size: 11px; color: var(--subtle); margin-top: 3px; }
+    .monitor { border: 1px solid var(--line); border-radius: 22px; background: var(--surface); overflow: hidden; box-shadow: var(--shadow); }
+    .monitor-header { padding: 24px 28px 20px; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; border-bottom: 1px solid var(--line); }
+    .monitor-header h2 { font-size: 24px; letter-spacing: -.6px; line-height: 1.3; margin-top: 9px; }
+    .exercise-subtitle { color: var(--subtle); font-size: 13px; line-height: 1.6; margin-top: 7px; max-width: 650px; }
+    .ring-count { border: 1px solid var(--line); border-radius: 12px; padding: 12px 15px; text-align: center; min-width: 76px; flex-shrink: 0; }
+    .ring-count strong { font-size: 26px; line-height: 1; }
+    .ring-count span { display: block; font-size: 11px; color: var(--subtle); margin-top: 5px; }
+    .monitor-body { display: grid; grid-template-columns: minmax(0, 1fr) 260px; }
+    .stage-column { min-width: 0; padding: 18px 24px 0; background: linear-gradient(180deg, #f9fcfa, #fff); }
+    .stage-meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .phase-status { font-size: 12px; font-weight: 600; color: var(--teal); }
+    .stage-label { font-size: 10px; letter-spacing: 1.1px; color: var(--subtle); }
+    #main-canvas { width: 100%; height: 360px; display: block; }
+    .legend { justify-content: center; gap: 15px; padding: 0 0 18px; font-size: 11px; color: var(--subtle); }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .swatch { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+    .swatch.thigh { background: var(--thigh); }
+    .swatch.shank { background: var(--shank); }
+    .swatch.angle { background: var(--angle); }
+    .readouts { border-left: 1px solid var(--line); padding: 22px 20px; }
+    .readout-label { color: var(--subtle); font-size: 11px; text-transform: uppercase; letter-spacing: .9px; }
+    .angle-value { font-size: 54px; line-height: 1.1; letter-spacing: -2px; font-weight: 600; margin: 10px 0 7px; font-variant-numeric: tabular-nums; }
+    .angle-unit { font-size: 22px; color: var(--subtle); letter-spacing: 0; }
+    .measurement-note { font-size: 12px; color: var(--subtle); line-height: 1.65; }
+    .live-equation { font-size: 12px; line-height: 1.6; margin-top: 12px; padding: 10px 11px; border-radius: 10px; background: #f3f6f4; font-variant-numeric: tabular-nums; }
+    .pitch-readout-row { display: grid; grid-template-columns: minmax(0, 1fr) 7ch; gap: 8px; align-items: baseline; }
+    .pitch-readout-row + .pitch-readout-row { margin-top: 4px; }
+    .pitch-readout-row span, .pitch-readout-row output { white-space: nowrap; }
+    .pitch-readout-row output { text-align: right; font-weight: 600; }
+    /* Reserve six text lines so changing angle candidates cannot shift the sensor cards. */
+    .direction-note { color: #87511c; font-size: 11px; line-height: 1.65; margin-top: 10px; min-block-size: 9.9em; }
+    .sensor-card { margin-top: 18px; }
+    .sensor-card + .sensor-card { margin-top: 14px; }
+    .sensor-heading { display: flex; align-items: center; gap: 9px; margin-bottom: 6px; font-size: 12px; font-weight: 600; }
+    .sensor-number { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 7px; background: var(--thigh-light); color: var(--thigh); font-size: 11px; }
+    .sensor-number.shank { background: var(--shank-light); color: var(--shank); }
+    .sensor-detail { font-size: 11px; color: var(--subtle); line-height: 1.6; margin-left: 33px; }
+    .playback { border-top: 1px solid var(--line); padding: 17px 24px; display: flex; align-items: center; gap: 18px; }
+    .scrub { flex: 1; min-width: 80px; }
+    .scrub-top { display: flex; justify-content: space-between; font-size: 11px; color: var(--subtle); margin-bottom: 6px; }
+    input[type="range"] { width: 100%; accent-color: var(--teal); margin: 0; cursor: ew-resize; }
+    .playback .button { min-width: 112px; }
+    .manual-panel { border-top: 1px solid var(--line); padding: 20px 24px; }
+    .manual-top { display: flex; gap: 12px; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; }
+    .manual-top h3 { font-size: 14px; }
+    .manual-top p { font-size: 11px; line-height: 1.6; color: var(--subtle); margin-top: 5px; }
+    .checkbox-label { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: var(--subtle); white-space: nowrap; }
+    input[type="checkbox"] { accent-color: var(--teal); width: 16px; height: 16px; }
+    .pitch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+    .pitch-label { display: flex; align-items: center; justify-content: space-between; font-size: 12px; gap: 12px; margin-bottom: 10px; }
+    .pitch-label output { font-variant-numeric: tabular-nums; font-weight: 600; }
+    .pitch-field.thigh input { accent-color: var(--thigh); }
+    .pitch-field.shank input { accent-color: var(--shank); }
+    .pitch-limits { display: flex; justify-content: space-between; font-size: 10px; color: var(--subtle); margin-top: 8px; }
+    .direction-label { display: block; font-size: 11px; color: var(--subtle); line-height: 1.5; margin-top: 16px; }
+    .direction-select { display: block; width: 100%; min-height: 42px; padding: 9px 10px; margin-top: 7px; border: 1px solid var(--line); border-radius: 9px; background: white; color: var(--ink); font-size: 12px; }
+    .control-note { font-size: 11px; line-height: 1.6; color: var(--subtle); margin-top: 16px; }
+    [hidden] { display: none !important; }
+    .section-top { justify-content: space-between; margin: 40px 0 18px; }
+    .section-top h2 { font-size: 23px; letter-spacing: -.6px; }
+    .section-top p { font-size: 12px; color: var(--subtle); margin-top: 6px; line-height: 1.6; }
+    .overview { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    .overview-card { border: 1px solid var(--line); border-radius: 18px; background: white; overflow: hidden; }
+    .overview-card.selected { border-color: var(--teal); box-shadow: 0 0 0 1px var(--teal); }
+    .card-top { padding: 18px 18px 0; display: flex; justify-content: space-between; gap: 12px; font-size: 11px; color: var(--subtle); }
+    .card-top .mini-count { color: var(--teal); font-weight: 600; }
+    .overview-card canvas { display: block; width: 100%; height: 205px; background: linear-gradient(180deg, #fff, #f9fcfa); }
+    .card-content { padding: 0 18px 18px; }
+    .card-title { padding: 0; background: transparent; border: none; text-align: left; color: var(--ink); font-size: 15px; font-weight: 600; line-height: 1.5; min-height: 24px; }
+    .card-title:hover { color: var(--teal); text-decoration: underline; }
+    .card-content p { font-size: 12px; color: var(--subtle); line-height: 1.6; margin-top: 7px; }
+    .card-measure { display: inline-block; margin-top: 12px; color: var(--teal); background: var(--teal-light); padding: 7px 9px; border-radius: 7px; font-size: 11px; }
+    .design-notes { margin-top: 28px; background: #edf3f0; border-radius: 18px; padding: 25px 28px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 28px; }
+    .design-notes h3 { font-size: 13px; margin-bottom: 8px; }
+    .design-notes p { color: var(--subtle); font-size: 12px; line-height: 1.75; }
+    .design-notes code { color: var(--ink); font-size: 11px; overflow-wrap: anywhere; }
+    .footer { display: flex; justify-content: space-between; gap: 20px; font-size: 11px; color: var(--subtle); line-height: 1.7; margin-top: 26px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    @media (min-width: 1300px) { #main-canvas { height: 410px; } }
+    @media (max-width: 1120px) {
+      .page { padding: 0 26px 36px; }
+      .workspace { grid-template-columns: 220px minmax(0, 1fr); gap: 16px; }
+      .monitor-body { grid-template-columns: minmax(0, 1fr) 210px; }
+      .readouts { padding: 20px 16px; }
+      .angle-value { font-size: 44px; }
+      .monitor-header { padding: 20px; }
+      .monitor-header h2 { font-size: 21px; }
+      .stage-column { padding: 18px 15px 0; }
+      #main-canvas { height: 330px; }
+    }
+    @media (max-width: 900px) {
+      .counts { gap: 18px; }
+      .workspace { grid-template-columns: 1fr; }
+      .exercise-nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+      .nav-phase { grid-column: 1 / -1; padding: 10px 12px 3px; }
+      .exercise-button { margin: 0; }
+      .monitor-body { grid-template-columns: minmax(0, 1fr) 260px; }
+      .overview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .design-notes { gap: 20px; }
+    }
+    @media (max-width: 620px) {
+      .page { padding: 0 16px 28px; }
+      .topbar { padding: 18px 0; }
+      .top-actions .proposal { display: none; }
+      .top-actions .button { padding: 8px 10px; font-size: 11px; }
+      .brand-name { font-size: 15px; }
+      .brand-sub { font-size: 9px; letter-spacing: 1px; }
+      .intro { padding: 28px 0 22px; display: block; }
+      h1 { font-size: 30px; }
+      .counts { margin-top: 20px; gap: 30px; }
+      .count strong { font-size: 24px; }
+      .exercise-nav { grid-template-columns: 1fr 1fr; }
+      .nav-number { width: 23px; height: 23px; }
+      .nav-name { font-size: 11px; }
+      .nav-mode { font-size: 10px; }
+      .exercise-button { gap: 8px; padding: 10px 7px; }
+      .monitor-header { padding: 18px; }
+      .monitor-header h2 { font-size: 22px; }
+      .ring-count { min-width: 60px; padding: 10px; }
+      .monitor-body { grid-template-columns: 1fr; }
+      #main-canvas { height: 290px; }
+      .readouts { border-left: 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 18px; }
+      .measurement-block { grid-column: 1 / -1; }
+      .angle-value { font-size: 42px; margin: 8px 0; }
+      .sensor-card, .sensor-card + .sensor-card { margin-top: 0; }
+      .sensor-detail { margin-left: 0; }
+      .playback { gap: 12px; padding: 16px; }
+      .playback .button { min-width: 100px; padding: 10px; }
+      .manual-panel { padding: 18px; }
+      .manual-top { flex-wrap: wrap; }
+      .pitch-grid { grid-template-columns: 1fr; gap: 22px; }
+      .direction-select { font-size: 16px; }
+      .overview { grid-template-columns: 1fr; gap: 16px; }
+      .overview-card canvas { height: 235px; }
+      .section-top { margin-top: 28px; }
+      .section-top h2 { font-size: 21px; }
+      .design-notes { grid-template-columns: 1fr; padding: 22px; }
+      .footer { display: block; }
+      .footer span { display: block; margin-top: 6px; }
+    }
+    @media print {
+      @page { size: A4 portrait; margin: 12mm; }
+      body { background: white; }
+      .page { max-width: none; padding: 0; }
+      .topbar { padding: 0 0 12px; }
+      .top-actions, .workspace, #overview-pause, .intro p { display: none !important; }
+      .intro { padding: 20px 0; }
+      h1 { font-size: 25px; }
+      .counts { gap: 20px; }
+      .count strong { font-size: 23px; }
+      .section-top { margin: 0 0 16px; }
+      .overview { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .overview-card { break-inside: avoid; box-shadow: none !important; }
+      .overview-card.selected { border-color: var(--line); }
+      .overview-card canvas { height: 185px; }
+      .card-top { padding-top: 12px; }
+      .card-title { font-size: 13px; }
+      .card-content p { font-size: 10px; }
+      .design-notes { break-inside: avoid; display: block; margin-top: 20px; }
+      .design-notes > div + div { margin-top: 12px; }
+      .footer { font-size: 9px; }
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page" id="hv-simulator">
+    <header class="topbar">
+      <div class="brand"><div class="brand-mark" aria-hidden="true">HV</div><div><div class="brand-name">Hands Việt</div><div class="brand-sub">PHỤC HỒI CHỨC NĂNG · ACL</div></div></div>
+      <div class="top-actions"><span class="tag proposal">Bản thiết kế mới · chưa áp dụng vào app</span><button class="button" id="print-button" type="button">In / Lưu PDF</button></div>
+    </header>
+    <section class="intro" aria-labelledby="page-title">
+      <div><div class="eyebrow">Bố trí cảm biến & chuyển động</div><h1>18 bài tập. Một góc nhìn rõ ràng.</h1><p>Xem vòng được đặt ở đâu, tín hiệu nào được lấy và góc nào điều khiển động tác. Chọn bài để chạy mô phỏng hoặc kéo tay hướng pitch.</p></div>
+      <div class="counts"><div class="count"><strong>18</strong><span>Bài tập</span></div><div class="count"><strong>11</strong><span>Bài dùng 2 vòng</span></div><div class="count"><strong>7</strong><span>Bài giữ 1 vòng</span></div></div>
+    </section>
+    <div class="workspace">
+      <nav class="exercise-nav" id="exercise-nav" aria-label="Chọn bài tập"></nav>
+      <section class="monitor" id="detail-monitor" aria-labelledby="exercise-title">
+        <header class="monitor-header">
+          <div><div class="heading-meta"><span class="tag" id="phase-tag">Phase 1</span><span class="tag proposal" id="measure-tag">Pitch cẳng chân</span></div><h2 id="exercise-title">Gập gối khi nằm sấp</h2><p class="exercise-subtitle" id="exercise-subtitle"></p></div>
+          <div class="ring-count"><strong id="ring-count">2</strong><span>vòng</span></div>
+        </header>
+        <div class="monitor-body">
+          <div class="stage-column"><div class="stage-meta"><span class="phase-status" id="motion-status" aria-live="polite">Tư thế bắt đầu</span><span class="stage-label" id="mode-label">CHU KỲ MINH HOẠ</span></div><canvas id="main-canvas" role="img" aria-label="Mô phỏng vị trí vòng và chuyển động bài tập"></canvas><div class="legend"><span id="thigh-legend"><i class="swatch thigh" aria-hidden="true"></i>1 · Vòng đùi</span><span id="shank-legend"><i class="swatch shank" aria-hidden="true"></i>2 · Vòng cẳng chân</span><span id="angle-legend"><i class="swatch angle" aria-hidden="true"></i>Góc đang theo dõi</span></div></div>
+          <aside class="readouts" aria-label="Góc đo và vai trò cảm biến">
+            <div class="measurement-block">
+              <div class="readout-label" id="angle-label">Pitch cẳng chân</div>
+              <div class="angle-value"><span id="angle-output">0</span><span class="angle-unit" id="angle-unit">°</span></div>
+              <p class="measurement-note" id="measurement-note"></p>
+              <div class="live-equation" id="live-equation">
+                <div class="pitch-readout-row" id="live-thigh-row" hidden><span>Pitch đùi</span><output id="live-thigh-pitch" for="thigh-pitch">0°</output></div>
+                <div class="pitch-readout-row" id="live-shank-row"><span>Pitch cẳng chân</span><output id="live-shank-pitch" for="shank-pitch">0°</output></div>
+                <span id="live-equation-detail" hidden>EMG minh hoạ · không có dữ liệu cảm biến thật</span>
+              </div>
+              <p class="direction-note" id="direction-note" hidden></p>
+            </div>
+            <div class="sensor-card"><div class="sensor-heading"><span class="sensor-number">1</span><span id="thigh-placement">Đùi trước</span></div><p class="sensor-detail" id="thigh-role"></p></div>
+            <div class="sensor-card" id="shank-card"><div class="sensor-heading"><span class="sensor-number shank">2</span><span id="shank-placement">Cẳng chân</span></div><p class="sensor-detail" id="shank-role"></p></div>
+          </aside>
+        </div>
+        <div class="playback"><button class="button primary" id="play-button" type="button" aria-pressed="false">▶ Chạy</button><div class="scrub"><label class="scrub-top" for="motion-progress"><span>Chu kỳ động tác</span><output id="progress-output" for="motion-progress">0%</output></label><input type="range" id="motion-progress" min="0" max="1000" step="1" value="0"></div><button class="button" id="reset-button" type="button">Về đầu</button></div>
+        <div class="manual-panel" id="manual-panel">
+          <div class="manual-top"><div><h3>Kéo tay pitch · −90° đến 90°</h3><p>0° nằm ngang; +90° hướng lên; −90° hướng xuống theo trục đã căn chỉnh.</p></div><label class="checkbox-label"><input type="checkbox" id="show-axes" checked>Hiện hướng trục</label></div>
+          <div class="pitch-grid">
+            <div class="pitch-field thigh" id="thigh-field">
+              <label class="pitch-label" for="thigh-pitch"><span>1 · Pitch đùi</span><output id="thigh-output" for="thigh-pitch">0°</output></label>
+              <input type="range" id="thigh-pitch" min="-90" max="90" step="0.5" value="0">
+              <div class="pitch-limits"><span>−90°</span><span>0°</span><span>90°</span></div>
+              <label class="direction-label" for="thigh-facing">Hướng chiếu ngang · giả định để vẽ</label>
+              <select class="direction-select" id="thigh-facing"><option value="right">Sang phải trong hình</option><option value="left">Sang trái trong hình</option></select>
+            </div>
+            <div class="pitch-field shank" id="shank-field">
+              <label class="pitch-label" for="shank-pitch"><span>2 · Pitch cẳng chân</span><output id="shank-output" for="shank-pitch">0°</output></label>
+              <input type="range" id="shank-pitch" min="-90" max="90" step="0.5" value="0">
+              <div class="pitch-limits"><span>−90°</span><span>0°</span><span>90°</span></div>
+              <label class="direction-label" for="shank-facing">Hướng chiếu ngang · giả định để vẽ</label>
+              <select class="direction-select" id="shank-facing"><option value="right">Sang phải trong hình</option><option value="left">Sang trái trong hình</option></select>
+            </div>
+          </div>
+          <p class="control-note" id="control-note"></p>
+        </div>
+      </section>
+    </div>
+    <section aria-labelledby="overview-title"><div class="section-top"><div><h2 id="overview-title">Toàn bộ bố trí mới</h2><p>Chạm tên bài để xem chi tiết. Các hình dùng cùng quy ước cảm biến.</p></div><button class="button" id="overview-pause" type="button" aria-pressed="false">▶ Chạy tất cả</button></div><div class="overview" id="overview"></div></section>
+    <section class="design-notes" aria-label="Quy ước và phạm vi mô phỏng">
+      <div><h3>Pitch chỉ từ −90° đến 90°</h3><p>Trục vòng đùi hướng từ hông đến gối; trục vòng cẳng chân từ gối đến gót chân. Pitch là góc nghiêng so với mặt ngang: 0° ngang, +90° lên, −90° xuống. Hướng sang trái hay phải không được xác định chỉ bằng pitch.</p></div>
+      <div><h3>Góc gối cần hướng của hai đoạn</h3><p>Trong mặt phẳng mô phỏng:<br><code>v = (s × cos(pitch), −sin(pitch))</code><br><code>s = +1 sang phải; −1 sang trái</code><br>Góc gối là góc nhỏ nhất giữa hai vector. Không mặc định lấy chênh lệch pitch; gối thẳng = 0°.</p></div>
+      <div><h3>Hướng chiếu là giả định, không phải số đo</h3><p>Chạy hoạt ảnh: hướng chiếu lấy từ tư thế minh hoạ. Kéo tay: hướng chiếu do bạn chọn. Đây không phải hướng suy ra từ firmware. Khi đưa vào app cần thông tin hướng đã căn chỉnh, như roll/quaternion. Biên độ hình chỉ để báo cáo, không phải ngưỡng tập.</p></div>
+    </section>
+    <footer class="footer"><span>Hands Việt · Bản mô phỏng bố trí vòng cho báo cáo<br>Không thay đổi cấu hình lâm sàng hoặc code Flutter.</span><span>1 · EMG từ đùi &nbsp; / &nbsp; 2 · IMU từ cẳng chân<br>Mở trực tiếp, không cần mạng hoặc kết nối thiết bị.</span></footer>
+    <div class="sr-only" id="interaction-status" aria-live="polite"></div>
+  </main>
+  <script>
+  (() => {
+    'use strict';
+    const exercises = [
+      { id: 'prone', phase: 1, name: 'Gập gối khi nằm sấp', rings: 2, measure: 'shank', label: 'Pitch cẳng chân', subtitle: 'Nằm sấp, giữ đùi trên mặt giường và gập cẳng chân lên.', placement: 'Đùi trước + cẳng chân', thighRole: 'Lấy EMG. IMU đùi không tham gia góc điều khiển bài này.', shankRole: 'Lấy pitch để theo dõi cẳng chân và điều khiển mô phỏng.', note: 'Đo hướng cẳng chân, không ghép hai pitch thành góc khớp gối.', stages: ['Chân duỗi', 'Gập cẳng chân', 'Cẳng chân nâng', 'Duỗi chân trở lại'] },
+      { id: 'heel', phase: 1, name: 'Trượt gót chân', rings: 2, measure: 'knee', label: 'Góc gối mô phỏng', subtitle: 'Nằm ngửa, trượt gót về phía hông rồi duỗi chân trở lại.', placement: 'Đùi trước + cẳng chân', thighRole: 'Lấy EMG và pitch đùi.', shankRole: 'Lấy pitch cẳng chân. Muốn tính góc gối còn cần hướng của cả hai đoạn.', note: 'Gót trượt trên mặt phẳng; góc gối tăng khi kéo gót về.', stages: ['Chân duỗi', 'Trượt gót về', 'Gối gập', 'Trượt gót ra'] },
+      { id: 'quad', phase: 1, name: 'Gồng cơ tứ đầu đùi', rings: 1, measure: 'emg', label: 'Hoạt động cơ', subtitle: 'Giữ chân duỗi, gồng cơ tứ đầu rồi thả lỏng. Giữ nguyên bố trí 1 vòng.', placement: 'Đùi trước · cơ tứ đầu', thighRole: 'Lấy EMG để hiển thị phản hồi khi gồng và thả lỏng.', shankRole: '', note: 'Không dùng góc gối để điều khiển bài này. Màu sáng ở đùi chỉ là phản hồi EMG minh hoạ, không phải số đo.', stages: ['Thả lỏng', 'Gồng cơ', 'Giữ gồng', 'Thả lỏng'] },
+      { id: 'raise', phase: 1, name: 'Nâng chân thẳng', rings: 1, measure: 'thigh', label: 'Pitch đùi', subtitle: 'Nằm ngửa, giữ gối duỗi và nâng cả chân lên. Giữ nguyên bố trí 1 vòng.', placement: 'Đùi trước · chân nâng', thighRole: 'Lấy EMG và pitch đùi. Pitch đùi điều khiển chân đang nâng.', shankRole: '', note: 'Đo hướng đùi. Gối giữ thẳng trong mô phỏng, không phải góc gập gối.', stages: ['Chân hạ', 'Nâng chân', 'Chân nâng', 'Hạ chân'] },
+      { id: 'sit', phase: 1, name: 'Đứng lên – ngồi xuống ghế', rings: 2, measure: 'knee', label: 'Góc gối mô phỏng', subtitle: 'Đứng → ngồi xuống ghế → đứng lên. Hai vòng đặt trên cùng một chân.', placement: 'Đùi trước + cẳng chân', thighRole: 'Lấy EMG và pitch đùi.', shankRole: 'Lấy pitch cẳng chân. Muốn tính góc gối còn cần hướng của cả hai đoạn.', note: 'Góc khớp gối tăng khi ngồi xuống và giảm khi đứng lên.', stages: ['Đứng', 'Ngồi xuống', 'Ngồi trên ghế', 'Đứng lên'] },
+      { id: 'extension', phase: 2, name: 'Duỗi gối có kháng lực', rings: 2, measure: 'knee', label: 'Góc gối mô phỏng', subtitle: 'Ngồi trên ghế, duỗi cẳng chân có kháng lực rồi gập lại.', placement: 'Đùi trước + cẳng chân', thighRole: 'Lấy EMG và pitch đùi.', shankRole: 'Lấy pitch cẳng chân. Muốn tính góc gối còn cần hướng của cả hai đoạn.', note: 'Đùi giữ gần nằm ngang; góc gối giảm khi duỗi chân.', stages: ['Gối gập', 'Duỗi gối', 'Chân duỗi', 'Gập gối trở lại'] },
+      { id: 'squat', phase: 2, name: 'Ngồi xổm một chân', rings: 2, measure: 'knee', label: 'Góc gối mô phỏng', subtitle: 'Đứng trên chân trụ, hạ xuống rồi đứng lên. Chân còn lại đưa ra trước, chếch xuống khoảng 45°.', placement: 'Đùi trước + cẳng chân · chân trụ', thighRole: 'Lấy EMG và pitch đùi chân trụ.', shankRole: 'Lấy pitch cẳng chân trụ. Muốn tính góc gối còn cần hướng của cả hai đoạn.', note: 'Cả hai vòng đều ở chân trụ, không đặt vòng trên chân đưa ra trước.', stages: ['Đứng một chân', 'Hạ xuống', 'Tư thế thấp', 'Đứng lên'] },
+      { id: 'step', phase: 2, name: 'Bước xuống bục', rings: 2, measure: 'knee', label: 'Góc gối mô phỏng', subtitle: 'Chân trụ giữ trên bục; hạ gót chân còn lại xuống mặt thấp rồi trở về.', placement: 'Đùi trước + cẳng chân · chân trụ trên bục', thighRole: 'Lấy EMG và pitch đùi chân trụ trên bục.', shankRole: 'Lấy pitch cẳng chân trụ. Muốn tính góc gối còn cần hướng của cả hai đoạn.', note: 'Đo gối của chân trụ trên bục, không phải chân bước xuống.', stages: ['Chân trụ trên bục', 'Hạ người', 'Gót chạm nhẹ', 'Trở về trên bục'] },
+      { id: 'bridge', phase: 2, name: 'Làm cầu một chân', rings: 2, measure: 'knee', label: 'Góc gối mô phỏng', subtitle: 'Nằm ngửa, một chân chống sàn, chân còn lại duỗi; nâng rồi hạ hông.', placement: 'Đùi trước + cẳng chân · chân chống sàn', thighRole: 'Lấy EMG và pitch đùi chân chống sàn.', shankRole: 'Lấy pitch cẳng chân chống sàn. Muốn tính góc gối còn cần hướng của cả hai đoạn.', note: 'Gối có thể thay đổi ít khi nâng hông. Góc gối không thay thế góc đùi hoặc độ nâng hông.', stages: ['Hông thấp', 'Nâng hông', 'Hông nâng', 'Hạ hông'] },
+      { id: 'prone_raise', phase: 3, name: 'Nâng chân khi nằm sấp', rings: 1, measure: 'thigh', label: 'Pitch đùi', subtitle: 'Nằm sấp trên giường, giữ gối thẳng hoàn toàn và nâng chân lên khỏi mặt phẳng.', placement: 'Đùi sau · chân nâng', thighRole: 'Lấy pitch đùi để theo dõi góc nâng chân khi duỗi khớp hông.', shankRole: '', note: 'Gối khóa thẳng 0° trong suốt chu kỳ. Góc đo là pitch đùi hướng lên trên mặt ngang (0° đến ~20°).', stages: ['Nằm sấp phẳng', 'Bắt đầu nâng chân', 'Đỉnh nâng chân (duỗi hông)', 'Hạ chân về giường'] },
+      { id: 'side_lift', phase: 3, name: 'Nâng chân ngang khi nằm nghiêng', rings: 1, measure: 'thigh', label: 'Pitch đùi', subtitle: 'Nằm nghiêng một bên, giữ gối thẳng và nâng chân trên lên theo phương đứng (dang hông).', placement: 'Đùi ngoài · chân nâng', thighRole: 'Lấy pitch đùi để theo dõi góc dang khớp hông (hip abduction) từ 0° đến ~35°.', shankRole: '', note: 'Gối khóa thẳng 0° trong suốt chu kỳ. Vòng cảm biến đặt ở mặt ngoài đùi; cẳng chân chuyển động đồng trục với đùi.', stages: ['Nằm nghiêng phẳng', 'Bắt đầu nâng chân', 'Đỉnh nâng (dang hông)', 'Hạ chân về vị trí ban đầu'] },
+      { id: 'stand_slr', phase: 3, name: 'Nâng chân thẳng khi đứng', rings: 1, measure: 'thigh', label: 'Pitch đùi', subtitle: 'Đứng thẳng vững trên chân trụ, giữ gối chân tập thẳng hoàn toàn và nâng chân về phía trước (gập hông).', placement: 'Đùi trước · chân nâng', thighRole: 'Lấy pitch đùi để theo dõi góc gập khớp hông (hip flexion) từ 0° (thẳng đứng) đến ~45° đưa ra trước.', shankRole: '', note: 'Gối khóa thẳng 0° trong suốt chu kỳ. Chân trụ giữ thẳng đứng trên sàn; chân nâng gập hông đưa thẳng ra phía trước.', stages: ['Đứng thẳng chuẩn bị', 'Bắt đầu nâng chân ra trước', 'Đỉnh nâng chân (gập hông)', 'Hạ chân về vị trí ban đầu'] },
+      { id: 'stand_extension', phase: 3, name: 'Duỗi hông khi đứng', rings: 1, measure: 'thigh', label: 'Pitch đùi', subtitle: 'Đứng thẳng vững trên chân trụ, giữ gối chân tập thẳng hoàn toàn và đưa chân ra phía sau (duỗi hông).', placement: 'Đùi sau · chân nâng', thighRole: 'Lấy pitch đùi để theo dõi góc duỗi khớp hông (hip extension) từ 0° (thẳng đứng) đến ~20° ra sau.', shankRole: '', note: 'Gối khóa thẳng 0° trong suốt chu kỳ. Giữ thân người thẳng đứng, không cúi người ra trước khi đưa chân ra sau.', stages: ['Đứng thẳng chuẩn bị', 'Bắt đầu đưa chân ra sau', 'Đỉnh duỗi hông', 'Thu chân về vị trí ban đầu'] },
+      { id: 'supine_bent_raise', phase: 3, name: 'Nâng chân gập gối khi nằm ngửa', rings: 2, measure: 'knee', label: 'Góc gối mô phỏng', subtitle: 'Nằm ngửa trên thảm, co gối 90° và nâng đùi về phía bụng (gập hông giữ gối gấp).', placement: 'Đùi trước + cẳng chân', thighRole: 'Theo dõi góc nâng đùi (gập hông).', shankRole: 'Theo dõi góc cẳng chân nhằm duy trì góc gập gối ổn định quanh 90°.', note: 'Gối duy trì góc gập ~90° trong suốt hành trình nâng hạ. Giúp giảm cánh tay đòn lên khớp gối so với nâng chân thẳng.', stages: ['Nằm ngửa co gối chuẩn bị', 'Bắt đầu nâng đùi lên', 'Đỉnh nâng đùi (tư thế tabletop 90/90)', 'Hạ chân về thảm'] },
+      { id: 'stand_high_knee', phase: 3, name: 'Nâng cao đùi khi đứng', rings: 2, measure: 'knee', label: 'Góc gối', subtitle: 'Đứng thẳng trên chân trụ, nâng đùi lên vuông góc với thân mình (gập hông 90° đồng thời co gối 90°).', placement: 'Đùi trước + cẳng chân', thighRole: 'Theo dõi góc nâng đùi đưa ra trước từ 0° (thẳng đứng) đến 90° (song song mặt sàn).', shankRole: 'Theo dõi cẳng chân buông thõng vuông góc để tính góc gập gối quanh 90°.', note: 'Chân trụ giữ vững trên sàn, thân người giữ thẳng không ngả sau. Chân nâng đưa đùi lên ngang hông, cẳng chân thả lỏng vuông góc.', stages: ['Đứng thẳng chuẩn bị', 'Bắt đầu nâng đùi co gối', 'Đỉnh nâng cao đùi (gập hông 90°, gối 90°)', 'Hạ chân về vị trí ban đầu'] },
+      { id: 'glute_bridge', phase: 3, name: 'Làm cầu hai chân', rings: 2, measure: 'thigh', label: 'Pitch đùi (Hai bên)', subtitle: 'Nằm ngửa co hai gối, ấn gót chân xuống sàn và nâng mông lên cao tạo đường thẳng từ vai đến gối.', placement: 'Hai bên đùi (Đùi gần + Đùi xa)', thighRole: 'Vòng 1 (Đùi gần): Theo dõi góc nâng đùi trước.', shankRole: 'Vòng 2 (Đùi xa): Theo dõi góc nâng đùi sau, kiểm tra tính đối xứng hai bên xương chậu.', note: 'Cả hai chân cùng nâng đồng thời. Đặt cảm biến trên cả hai đùi để phát hiện hiện tượng lệch hông hoặc xoay chậu khi nâng cầu.', stages: ['Nằm ngửa co gối chuẩn bị', 'Bắt đầu nâng mông', 'Đỉnh nâng cầu (thân và đùi thẳng hàng)', 'Hạ mông về thảm'] },
+      { id: 'stand_curl', phase: 3, name: 'Gập gối khi đứng', rings: 2, measure: 'knee', label: 'Góc gối', subtitle: 'Đứng thẳng trên chân trụ, giữ đùi thẳng đứng và gập cẳng chân ra sau hướng gót về phía mông.', placement: 'Đùi trước + cẳng chân', thighRole: 'Theo dõi đùi giữ thẳng đứng cố định quanh 0° (không đưa đùi ra trước).', shankRole: 'Theo dõi góc gập cẳng chân ra sau để tính góc co gối từ 0° đến ~95°.', note: 'Giữ thân người và đùi thẳng đứng, không gập hông khi gập gối. Tập trung cô lập nhóm cơ đùi sau (hamstrings).', stages: ['Đứng thẳng chuẩn bị', 'Bắt đầu gập gối ra sau', 'Đỉnh gập gối (gót hướng về mông)', 'Hạ cẳng chân về sàn'] },
+      { id: 'nordic', phase: 3, name: 'Nordic ngả người', rings: 1, measure: 'thigh', label: 'Góc ngả thân', subtitle: 'Quỳ cao trên thảm, cố định hai cổ chân; giữ thân và đùi thẳng hàng rồi từ từ ngả người ra trước.', placement: 'Đùi trước · chân tập', thighRole: 'Theo dõi góc ngả của thân và đùi ra phía trước từ 0° (thẳng đứng) đến ~35°.', shankRole: '', note: 'Khóa chặt khớp hông ở 0° (thân và đùi tạo thành một đường thẳng như tấm ván plank). Dùng cơ đùi sau kiểm soát tốc độ ngả người ra trước.', stages: ['Quỳ cao chuẩn bị', 'Bắt đầu ngả người ra trước', 'Đỉnh ngả thân (30°–35°)', 'Thu người về vị trí quỳ thẳng'] },
+      { id: 'single_hop', phase: 3, name: 'Nhảy lò cò 1 bước', rings: 2, measure: 'knee', label: 'Góc gối tiếp đất', subtitle: 'Đứng trên chân phẫu thuật, bật nhảy lò cò về phía trước xa nhất có thể và tiếp đất vững trong 2 giây.', placement: 'Đùi trước + cẳng chân · chân nhảy', thighRole: 'Theo dõi độ gập hông khi chuẩn bị bật và hấp thụ lực lúc tiếp đất.', shankRole: 'Theo dõi góc gập gối để đánh giá khả năng hấp thụ xung lực khi tiếp đất.', note: '[BẢN XEM TRƯỚC TĨNH] Bài test chức năng đánh giá chỉ số đối xứng chi (LSI). Mô phỏng động học bước nhảy đang được phát triển. Tư thế hiển thị ở trạng thái chuẩn bị đứng thẳng.', stages: ['Đứng thăng bằng 1 chân', 'Khuỵu gối tích lực', 'Bật nhảy về phía trước', 'Tiếp đất và giữ vững 2 giây'] },
+      { id: 'triple_hop', phase: 3, name: 'Nhảy lò cò 3 bước', rings: 2, measure: 'knee', label: 'Góc gối chuỗi nhảy', subtitle: 'Thực hiện liên tục 3 bước nhảy lò cò về phía trước trên cùng một chân và giữ thăng bằng vững ở bước cuối.', placement: 'Đùi trước + cẳng chân · chân nhảy', thighRole: 'Theo dõi biên độ gập/duỗi hông qua 3 chu kỳ bật nhảy liên tiếp.', shankRole: 'Đo góc gối để phân tích khả năng chuyển tiếp lực đàn hồi và ổn định khớp.', note: '[BẢN XEM TRƯỚC TĨNH] Đánh giá sức mạnh bùng nổ và khả năng kiểm soát động lực học liên tục. Tư thế hiển thị ở trạng thái chuẩn bị đứng thẳng.', stages: ['Đứng chuẩn bị 1 chân', 'Bật bước 1 & tiếp đất tiếp nối', 'Bật bước 2 & chuyển lực', 'Bật bước 3 & tiếp đất giữ vững'] },
+      { id: 'walk_10m', phase: 3, name: 'Đi bộ 10 mét', rings: 2, measure: 'knee', label: 'Biên độ dáng đi', subtitle: 'Đi bộ tự nhiên theo đường thẳng 10m với tốc độ bình thường hoặc tối đa để phân tích dáng đi.', placement: 'Đùi trước + cẳng chân · chân theo dõi', thighRole: 'Theo dõi chu kỳ vung đùi và góc duỗi hông khi chạm gót.', shankRole: 'Theo dõi pha gập/duỗi gối trong toàn bộ chu kỳ dáng đi (gait cycle).', note: '[BẢN XEM TRƯỚC TĨNH] Đánh giá đối xứng dáng đi, nhịp bước và tốc độ phục hồi chức năng đi lại. Tư thế hiển thị ở trạng thái đứng thẳng ban đầu.', stages: ['Đứng vạch xuất phát', 'Bắt đầu bước chu kỳ dáng đi', 'Duy trì tốc độ ổn định 10m', 'Giảm tốc và hoàn thành'] },
+      { id: 'short_arc_quad', phase: 3, name: 'Duỗi gối góc hẹp có kê đệm', rings: 2, measure: 'knee', label: 'Góc duỗi gối', subtitle: 'Nằm ngửa kê đệm tròn dưới khoeo gối, giữ yên đùi và nâng cẳng chân lên thẳng hàng với đùi.', placement: 'Đùi trước + cẳng chân · chân tập', thighRole: 'Theo dõi đùi giữ cố định trên đệm kê, không nhấc đùi lên.', shankRole: 'Theo dõi cẳng chân nâng lên từ sàn để đánh giá biên độ duỗi gối từ ~45° về 0°.', note: 'Cố định đùi tì chắc trên đệm tròn (bolster). Kích hoạt cơ tứ đầu đùi để nâng gót chân lên khỏi sàn cho đến khi gối duỗi thẳng hoàn toàn (khóa gối 0°).', stages: ['Nằm ngửa kê đệm thả lỏng', 'Bắt đầu kích hoạt cơ tứ đầu nâng cẳng chân', 'Đỉnh duỗi gối hoàn toàn (thẳng hàng với đùi)', 'Hạ gót chân có kiểm soát về sàn'] },
+      { id: 'stand_tke', phase: 3, name: 'Duỗi gối tận cùng khi đứng', rings: 2, measure: 'knee', label: 'Góc duỗi gối', subtitle: 'Đứng dồn trọng lượng lên chân trụ; chân tập hơi chùng gối về trước và kiễng gót chân, sau đó siết cơ tứ đầu đùi đạp thẳng gối và hạ gót chân chạm sàn.', placement: 'Đùi trước + cẳng chân · chân tập', thighRole: 'Theo dõi góc đùi nghiêng nhẹ khi gối chùng và trở về thẳng đứng khi duỗi gối.', shankRole: 'Theo dõi góc cẳng chân ngả trước và duỗi thẳng hoàn toàn về 0°.', note: 'Mũi chân (ball of foot) giữ nguyên vị trí tiếp xúc sàn. Khi gối chùng về trước, gót chân tự động nhấc lên khỏi mặt sàn. Siết mạnh cơ đùi trước để đạp thẳng gối hoàn toàn và ấn gót chân trở lại mặt sàn.', stages: ['Đứng chuẩn bị, gối hơi chùng và kiễng gót', 'Bắt đầu kích hoạt cơ tứ đầu đẩy lùi gối', 'Đỉnh khóa gối 0° hoàn toàn (gót chân chạm sàn)', 'Thả lỏng chùng nhẹ gối và kiễng gót trở lại'] },
+      { id: 'mini_squat', phase: 3, name: 'Ngồi xổm góc nông hai chân', rings: 2, measure: 'knee', label: 'Góc gối ngồi xổm', subtitle: 'Đứng hai chân rộng bằng vai, từ từ hạ hông ra sau và khuỵu gối đến khoảng 35° - 45°, sau đó đạp thẳng chân đứng dậy.', placement: 'Đùi trước + cẳng chân · chân theo dõi', thighRole: 'Theo dõi độ dốc của đùi khi khớp hông gập và đẩy ra sau.', shankRole: 'Đo độ nghiêng cẳng chân về trước để tính toán chính xác góc gập gối.', note: 'Cả hai chân khuỵu gối đồng thời với độ lệch thị sai (parallax depth). Giữ lưng thẳng, thân người hơi đổ nhẹ về trước để giữ thăng bằng. Đầu gối hướng thẳng theo mũi chân và không vượt quá các ngón chân.', stages: ['Đứng thẳng hai chân chuẩn bị', 'Bắt đầu hạ hông ra sau và khuỵu gối', 'Đáy ngồi xổm góc nông (35° - 45°)', 'Đạp thẳng chân trở về vị trí ban đầu'] },
+      { id: 'wall_squat', phase: 3, name: 'Ngồi xổm dựa tường', rings: 2, measure: 'knee', label: 'Góc gối dựa tường', subtitle: 'Tựa lưng thẳng vào tường, bước hai chân ra trước và từ từ trượt lưng thẳng xuống sâu hơn bài ngồi xổm góc nông, sau đó đạp chân trượt trở lên.', placement: 'Đùi trước + cẳng chân · chân theo dõi', thighRole: 'Theo dõi góc đùi nâng lên gần phương ngang khi trượt sâu xuống dọc theo tường.', shankRole: 'Đo góc nghiêng cẳng chân để tính chính xác biên độ gập gối (đạt ~75° - 80°).', note: 'Giữ lưng áp sát và trượt thẳng đứng dọc theo mặt tường (không cúi gập người về trước). Hai chân khuỵu đồng thời với độ lệch thị sai chiều sâu, bàn chân đặt cố định phía trước.', stages: ['Tựa lưng thẳng vào tường, hai chân bước nhẹ ra trước', 'Bắt đầu trượt hông thẳng xuống dọc theo tường', 'Đáy ngồi xổm dựa tường (~78° gập gối)', 'Đạp gót chân trượt lưng thẳng trở về vị trí đầu'] },
+      { id: 'heel_raise', phase: 3, name: 'Nhón gót hai chân khi đứng', rings: 2, measure: 'shank', label: 'Góc nhón gót hai bên', subtitle: 'Đứng thẳng hai chân rộng bằng vai, giữ thẳng gối và nhón cao hai gót chân lên khoảng 55° - 60°, sau đó hạ gót có kiểm soát về sàn.', placement: 'Cẳng chân gần + Cẳng chân xa', thighRole: 'Theo dõi góc nhón gót và biên độ nâng của cẳng chân gần (chân hiển thị chính).', shankRole: 'Theo dõi góc nhón gót và độ đối xứng hai bên của cẳng chân xa.', note: 'Giữ hai khớp gối duỗi thẳng hoàn toàn (0°), nhón cao gót chân quanh mũi chân cố định trên sàn đạt khoảng 55° - 60°. Hai vòng cảm biến gắn trên hai bắp chân để đánh giá biên độ và tính đối xứng.', stages: ['Đứng thẳng hai bàn chân chạm sàn', 'Bắt đầu kiễng gót nâng người thẳng lên', 'Đỉnh nhón gót tối đa (~58°)', 'Hạ gót chân có kiểm soát về mặt sàn'] }
+    ];
+    const root = document.getElementById('hv-simulator');
+    const get = id => root.querySelector('#' + id);
+    const mainCanvas = get('main-canvas');
+    const thighInput = get('thigh-pitch');
+    const shankInput = get('shank-pitch');
+    const thighFacingInput = get('thigh-facing');
+    const shankFacingInput = get('shank-facing');
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    const state = { index: 0, progress: 0, playing: false, galleryPlaying: false, galleryProgress: .22, manual: false, thighPitch: 0, shankPitch: 0, thighFacing: 'right', shankFacing: 'right', axes: true };
+    const colors = { ink: '#28473f', body: '#ccd8d1', bodyEdge: '#90a59b', skin: '#e4d4c5', clothes: '#668b7d', far: '#d9e2dc', thigh: '#7755b7', shank: '#187f90', angle: '#c27222', floor: '#dbe6df', bench: '#e5ede7', white: '#ffffff' };
+    const rad = Math.PI / 180;
+    const pt = (x, y) => ({ x, y });
+    const add = (a, b) => pt(a.x + b.x, a.y + b.y);
+    const mix = (a, b, t) => pt(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t);
+    // Geometry angles are not sensor pitch. Keep the two quantities separate.
+    const v = (length, direction) => pt(length * Math.cos(direction * rad), -length * Math.sin(direction * rad));
+    const advance = (origin, length, direction) => add(origin, v(length, direction));
+    const retreat = (origin, length, direction) => add(origin, v(-length, direction));
+    const wrap180 = value => ((value + 180) % 360 + 360) % 360 - 180;
+    const angleBetweenDirections = (thigh, shank) => Math.abs(wrap180(thigh - shank));
+    const directionOf = (a, b) => Math.atan2(a.y - b.y, b.x - a.x) / rad;
+    const clamp = (value, lo, hi) => Math.max(lo, Math.min(hi, value));
+    const validPitch = value => Number.isFinite(value) && value >= -90 && value <= 90;
+    const validFacing = value => value === 'right' || value === 'left';
+    const facingOf = direction => Math.cos(direction * rad) >= -1e-12 ? 'right' : 'left';
+    // Ideal 2D gravity projection, not a simulation of the firmware's filters.
+    const pitchFromDirection = direction => Math.asin(clamp(Math.sin(direction * rad), -1, 1)) / rad;
+    function directionFromPitch(pitch, facing) {
+      if (!validPitch(pitch) || !validFacing(facing)) return null;
+      return facing === 'right' ? pitch : wrap180(180 - pitch);
+    }
+    function kneeAngle(thighPitch, shankPitch, thighFacing, shankFacing) {
+      if (!validPitch(thighPitch) || !validPitch(shankPitch) || !validFacing(thighFacing) || !validFacing(shankFacing)) return null;
+      const a = v(1, directionFromPitch(thighPitch, thighFacing));
+      const b = v(1, directionFromPitch(shankPitch, shankFacing));
+      return Math.atan2(Math.abs(a.x * b.y - a.y * b.x), a.x * b.x + a.y * b.y) / rad;
+    }
+    function kneeAngleCandidates(thighPitch, shankPitch) {
+      if (!validPitch(thighPitch) || !validPitch(shankPitch)) return [];
+      const result = [];
+      for (const facing of ['right', 'left']) {
+        const angle = kneeAngle(thighPitch, shankPitch, 'right', facing);
+        if (!result.some(value => Math.abs(value - angle) < 1e-7)) result.push(angle);
+      }
+      return result.sort((a, b) => a - b);
+    }
+    const deg = value => (Math.abs(value) < .05 ? '0' : value.toFixed(1).replace(/\.0$/, '')).replace('-', '−') + '°';
+    const bend = progress => (1 - Math.cos(progress * Math.PI * 2)) / 2;
+
+    function footPoints(ankle, direction, mode) {
+      if (mode === 'heel_raise_near' || mode === 'heel_raise_far') {
+        const heel = add(ankle, pt(-6, 9));
+        const toe = pt(mode === 'heel_raise_far' ? 446 : 426, 417);
+        return { heel, toe };
+      }
+      if (mode === 'toe_pivot') {
+        const heel = add(ankle, pt(-6, 9));
+        const toe = pt(424, 417);
+        return { heel, toe };
+      }
+      if (mode === 'planted') {
+        const heel = add(ankle, pt(-6, 9));
+        return { heel, toe: add(heel, pt(28, 0)) };
+      }
+      // Rotate about the actual ankle, not a screen-space offset from it.
+      // Toes point down when prone, up when supine; both follow the shank.
+      const toeDirection = direction + (mode === 'prone' ? -90 : 90);
+      return { heel: advance(ankle, 6, toeDirection + 180), toe: advance(ankle, 28, toeDirection) };
+    }
+
+    function kneeAbove(hip, ankle, length = 105) {
+      const dx = ankle.x - hip.x, dy = ankle.y - hip.y, distance = Math.hypot(dx, dy);
+      const a = distance / 2, h = Math.sqrt(Math.max(0, length * length - a * a));
+      return pt(hip.x + a * dx / distance + h * dy / distance, hip.y + a * dy / distance - h * dx / distance);
+    }
+
+    function poseFor(exercise, progress, manual = null) {
+      const d = bend(progress);
+      let thighDirection = 0, shankDirection = 0, heelAngle = 0, hip, knee, ankle, shoulder, head,
+        freeKnee, freeAnkle, elbow, hand, freeHip, topArmElbow, topArmHand;
+      let floor = 420, seat = null, platform = null, bed = null;
+      const lying = ['prone', 'heel', 'quad', 'raise', 'bridge', 'prone_raise', 'side_lift', 'supine_bent_raise', 'glute_bridge', 'short_arc_quad'].includes(exercise.id);
+      if (lying && !['prone', 'prone_raise', 'side_lift'].includes(exercise.id)) floor = ['bridge', 'glute_bridge'].includes(exercise.id) ? 413 : 410;
+      switch (exercise.id) {
+        case 'prone': thighDirection = 0; shankDirection = 80 * d; hip = pt(275, 316); bed = { x: 60, y: 341, width: 495 }; floor = 425; break;
+        case 'prone_raise': thighDirection = 18 * d; shankDirection = thighDirection; hip = pt(275, 316); bed = { x: 60, y: 341, width: 495 }; floor = 425; break;
+        case 'side_lift': thighDirection = 35 * d; shankDirection = thighDirection; hip = pt(248, 385); break;
+        case 'heel': thighDirection = 65 * d; shankDirection = -65 * d; hip = pt(248, 389); break;
+        case 'quad': thighDirection = 0; shankDirection = 0; hip = pt(248, 389); break;
+        case 'short_arc_quad': thighDirection = 30; shankDirection = -43 + 73 * d; hip = pt(248, 389); break;
+        case 'raise': thighDirection = 55 * d; shankDirection = thighDirection; hip = pt(248, 389); break;
+        case 'sit': thighDirection = -90 + 85 * d; shankDirection = -90 - 15 * d; ankle = pt(432, 408); seat = { x: 244, y: 320, width: 144, backTop: 184 }; break;
+        case 'extension': thighDirection = 0; shankDirection = -90 + 80 * d; hip = pt(250, 295); seat = { x: 195, y: 320, width: 166, backTop: 155 }; break;
+        case 'squat': thighDirection = -90 + 60 * d; shankDirection = -90 - 20 * d; ankle = pt(402, 408); break;
+        case 'step': thighDirection = -90 + 60 * d; shankDirection = -90 - 20 * d; ankle = pt(394, 368); platform = { x: 330, y: 380, width: 84, floor: 420 }; break;
+        case 'bridge': {
+          shoulder = pt(126, 393);
+          hip = pt(shoulder.x + Math.sqrt(112 ** 2 - (64 * d) ** 2), shoulder.y - 64 * d);
+          ankle = pt(365, 393); knee = kneeAbove(hip, ankle);
+          thighDirection = directionOf(hip, knee); shankDirection = directionOf(knee, ankle); break;
+        }
+        case 'stand_slr':
+          hip = pt(402, 198);
+          thighDirection = -90 - 45 * d;
+          shankDirection = thighDirection;
+          freeKnee = pt(hip.x, hip.y + 105);
+          freeAnkle = pt(hip.x, 408);
+          break;
+        case 'stand_extension':
+        case 'stand_abduction':
+          hip = pt(402, 198);
+          thighDirection = -90 + 20 * d;
+          shankDirection = thighDirection;
+          freeKnee = pt(hip.x, hip.y + 105);
+          freeAnkle = pt(hip.x, 408);
+          break;
+        case 'supine_bent_raise':
+          hip = pt(248, 389);
+          thighDirection = 90 * d;
+          shankDirection = 0;
+          break;
+        case 'stand_high_knee':
+          hip = pt(402, 198);
+          thighDirection = -90 + 90 * d;
+          shankDirection = -90;
+          freeKnee = pt(hip.x, hip.y + 105);
+          freeAnkle = pt(hip.x, 408);
+          break;
+        case 'glute_bridge': {
+          shoulder = pt(130, 395);
+          hip = pt(shoulder.x + Math.sqrt(118 ** 2 - (65 * d) ** 2), 389 - 65 * d);
+          ankle = pt(365, 408);
+          knee = kneeAbove(hip, ankle);
+          thighDirection = directionOf(hip, knee);
+          shankDirection = directionOf(knee, ankle);
+          freeHip = pt(hip.x + 20, hip.y);
+          freeAnkle = pt(ankle.x + 20, ankle.y);
+          freeKnee = kneeAbove(freeHip, freeAnkle);
+          break;
+        }
+        case 'stand_curl':
+          hip = pt(402, 198);
+          thighDirection = -90;
+          shankDirection = -90 - 95 * d;
+          freeKnee = pt(hip.x, hip.y + 105);
+          freeAnkle = pt(hip.x, 408);
+          break;
+        case 'nordic':
+          thighDirection = -90 + 35 * d;
+          shankDirection = 0;
+          ankle = pt(445, 408);
+          break;
+        case 'single_hop':
+        case 'triple_hop':
+        case 'walk_10m':
+          hip = pt(402, 198);
+          thighDirection = -90;
+          shankDirection = -90;
+          freeKnee = pt(hip.x, hip.y + 105);
+          freeAnkle = pt(hip.x, 408);
+          break;
+        case 'stand_tke':
+          hip = pt(402, 198);
+          thighDirection = -90 - 15 * (1 - d);
+          shankDirection = -90 + 20 * (1 - d);
+          freeKnee = pt(hip.x, hip.y + 105);
+          freeAnkle = pt(hip.x, 408);
+          break;
+        case 'mini_squat':
+          hip = pt(402 - 17.2 * d, 198 + 13.4 * d);
+          thighDirection = -90 + 25 * d;
+          shankDirection = -90 - 15 * d;
+          break;
+        case 'wall_squat': {
+          const hipX = 370, ankleX = 450, ankleY = 408;
+          const dx0 = ankleX - hipX;
+          const dy0 = Math.sqrt(210 ** 2 - dx0 ** 2);
+          const hipY0 = ankleY - dy0;
+          hip = pt(hipX, hipY0 + 52 * d);
+          const dx = ankleX - hip.x, dy = ankleY - hip.y;
+          const dist = Math.hypot(dx, dy);
+          const baseAngle = Math.atan2(-dy, dx) / rad;
+          const alpha = Math.acos(clamp((dist / 2) / 105, -1, 1)) / rad;
+          thighDirection = baseAngle + alpha;
+          shankDirection = baseAngle - alpha;
+          break;
+        }
+        case 'heel_raise': {
+          if (manual) {
+            if (!validPitch(manual.thighPitch) || !validPitch(manual.shankPitch) || !validFacing(manual.thighFacing) || !validFacing(manual.shankFacing)) {
+              throw new RangeError('Pitch must be within ±90° and have an explicit horizontal direction');
+            }
+          }
+          heelAngle = manual ? clamp(manual.shankPitch, 0, 60) : 58 * d;
+          const psi = heelAngle * rad;
+          ankle = pt(432 - 30 * Math.cos(psi), 408 - 30 * Math.sin(psi));
+          thighDirection = -90;
+          shankDirection = -90;
+          break;
+        }
+      }
+      if (manual && exercise.id !== 'heel_raise') {
+        if (exercise.id !== 'prone') thighDirection = directionFromPitch(manual.thighPitch, manual.thighFacing);
+        shankDirection = (['raise', 'prone_raise', 'side_lift', 'stand_slr', 'stand_abduction', 'stand_extension', 'nordic'].includes(exercise.id)) ? (exercise.id === 'nordic' ? 0 : thighDirection) : directionFromPitch(manual.shankPitch, manual.shankFacing);
+        if (thighDirection === null || shankDirection === null) throw new RangeError('Pitch must be within ±90° and have an explicit horizontal direction');
+      }
+      if (ankle) { knee = retreat(ankle, 105, shankDirection); hip = retreat(knee, 105, thighDirection); }
+      else { knee = advance(hip, 105, thighDirection); ankle = advance(knee, 105, shankDirection); }
+      if (exercise.id === 'side_lift') {
+        shoulder = pt(130, 395);
+        head = pt(85, 380);
+        // Bottom arm (pillow under head)
+        elbow = pt(85, 412);
+        hand = pt(20, 412);
+        // Top arm (resting along top of torso)
+        topArmElbow = pt(185, 375);
+        topArmHand = pt(240, 375);
+        // Decoupled bottom leg: pivots independently from lower pelvis
+        freeHip = pt(248, 412);
+        freeKnee = pt(freeHip.x + 105, 412);
+        freeAnkle = pt(freeHip.x + 210, 412);
+      } else if (exercise.id === 'prone' || exercise.id === 'prone_raise') {
+        shoulder = pt(153, 305); head = pt(104, 301);
+        freeKnee = pt(380, 330); freeAnkle = pt(485, 330);
+      } else if (lying) {
+        if (exercise.id !== 'bridge' && exercise.id !== 'glute_bridge') shoulder = pt(130, 389);
+        head = pt(82, shoulder.y - 10);
+        if (exercise.id === 'bridge') {
+          const freeDirection = 5 + 25 * d;
+          freeKnee = advance(hip, 105, freeDirection); freeAnkle = advance(freeKnee, 105, freeDirection);
+        } else if (['raise', 'supine_bent_raise'].includes(exercise.id)) {
+          freeKnee = advance(hip, 105, 32); freeAnkle = advance(freeKnee, 105, -32);
+        } else if (exercise.id === 'glute_bridge') {
+          // freeHip, freeKnee, freeAnkle already calculated with parallax
+        } else { freeKnee = pt(hip.x + 105, hip.y + 7); freeAnkle = pt(hip.x + 210, hip.y + 7); }
+      } else {
+        if (exercise.id === 'nordic') {
+          const torsoAngle = thighDirection + 180;
+          shoulder = advance(hip, 110, torsoAngle);
+          head = advance(shoulder, 38, torsoAngle);
+          freeKnee = knee;
+          freeAnkle = ankle;
+        } else {
+          const lean = exercise.id === 'wall_squat' ? 0 : ['extension', 'stand_abduction', 'stand_extension', 'stand_high_knee', 'stand_curl', 'single_hop', 'triple_hop', 'walk_10m', 'stand_tke', 'heel_raise'].includes(exercise.id) ? 2 : exercise.id === 'sit' ? 5 + 10 * Math.sin(d * Math.PI) : exercise.id === 'stand_slr' ? 3 : exercise.id === 'mini_squat' ? 2 + 10 * d : 4 + 24 * d;
+          shoulder = advance(hip, 100, 90 - lean);
+          head = advance(shoulder, 43, 90 - lean);
+          if (exercise.id === 'squat') { freeKnee = advance(hip, 105, -45); freeAnkle = advance(freeKnee, 105, -45); }
+          else if (exercise.id === 'step') {
+            const dx = 45 + 40 * d; freeAnkle = add(hip, pt(dx, Math.sqrt(210 ** 2 - dx ** 2))); freeKnee = mix(hip, freeAnkle, .5);
+          } else if (exercise.id === 'extension') { freeKnee = add(hip, pt(90, 12)); freeAnkle = add(freeKnee, pt(7, 98)); }
+          else if (['stand_slr', 'stand_abduction', 'stand_extension', 'stand_high_knee', 'stand_curl', 'single_hop', 'triple_hop', 'walk_10m', 'stand_tke'].includes(exercise.id)) { freeKnee = pt(hip.x, hip.y + 105); freeAnkle = pt(hip.x, 408); }
+          else if (['mini_squat', 'wall_squat', 'heel_raise'].includes(exercise.id)) {
+            freeHip = pt(hip.x + 20, hip.y);
+            freeKnee = pt(knee.x + 20, knee.y);
+            freeAnkle = pt(ankle.x + 20, ankle.y);
+          }
+          else { freeKnee = add(knee, pt(-22, 8)); freeAnkle = add(ankle, pt(-25, 0)); }
+        }
+      }
+      if (exercise.id === 'side_lift') {
+        elbow = pt(85, 412); hand = pt(20, 412);
+      } else if (exercise.id === 'prone' || exercise.id === 'prone_raise') {
+        elbow = add(shoulder, pt(-27, 25)); hand = add(elbow, pt(-57, 0));
+      } else if (lying) {
+        elbow = add(shoulder, pt(43, 12)); hand = add(elbow, pt(54, 0));
+      } else if (['squat', 'sit', 'mini_squat', 'wall_squat'].includes(exercise.id)) {
+        elbow = add(shoulder, pt(35, 13)); hand = add(elbow, pt(42, -8));
+      } else if (exercise.id === 'nordic') {
+        elbow = pt(shoulder.x - 22, shoulder.y + 35); hand = pt(shoulder.x + 12, shoulder.y + 35);
+      } else {
+        elbow = add(shoulder, pt(20, 46)); hand = add(elbow, pt(-15, 39));
+      }
+      const thighPitch = exercise.id === 'heel_raise' ? heelAngle : pitchFromDirection(thighDirection);
+      const shankPitch = exercise.id === 'heel_raise' ? heelAngle : pitchFromDirection(shankDirection);
+      // Horizontal branches come from the illustrative pose or explicit controls,
+      // never from pitch alone. Preserve the selected branch at exactly ±90°.
+      const thighFacing = manual && exercise.id !== 'prone' ? manual.thighFacing : facingOf(thighDirection);
+      const shankFacing = manual ? (['raise', 'prone_raise', 'side_lift', 'stand_slr', 'stand_abduction', 'stand_extension', 'nordic'].includes(exercise.id) ? (exercise.id === 'nordic' ? 'right' : thighFacing) : manual.shankFacing) : facingOf(shankDirection);
+      return {
+        thighDirection, shankDirection, thighPitch, shankPitch, thighFacing, shankFacing, heelAngle,
+        hip, knee, ankle, shoulder, head, freeKnee, freeAnkle, elbow, hand,
+        freeHip, topArmElbow, topArmHand,
+        floor, seat, platform, bed, lying, d,
+        activation: exercise.id === 'quad' ? (progress >= .2 && progress <= .575 ? 1 : .08) : .12 + d * .6,
+        flexion: exercise.id === 'heel_raise' ? 0 : kneeAngle(thighPitch, shankPitch, thighFacing, shankFacing)
+      };
+    }
+
+    function canvasSize(canvas) {
+      const rect = canvas.getBoundingClientRect(), dpr = Math.min(devicePixelRatio || 1, 2);
+      const width = Math.max(1, rect.width), height = Math.max(1, rect.height);
+      if (canvas.width !== Math.round(width * dpr) || canvas.height !== Math.round(height * dpr)) { canvas.width = Math.round(width * dpr); canvas.height = Math.round(height * dpr); }
+      return { width, height, dpr };
+    }
+
+    function draw(canvas, exercise, pose, detailed = false) {
+      const { width, height, dpr } = canvasSize(canvas), ctx = canvas.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, width, height);
+      const points = [
+        pose.hip, pose.knee, pose.ankle, pose.shoulder, pose.head,
+        pose.freeKnee, pose.freeAnkle, pose.elbow, pose.hand,
+        pose.freeHip, pose.topArmHand
+      ].filter(Boolean);
+      // Fixed framing during the normal cycle; expand only for out-of-frame manual poses.
+      const cameraTop = { prone: 170, prone_raise: 170, side_lift: 170, heel: 250, quad: 320, raise: 170, bridge: 185, supine_bent_raise: 170, glute_bridge: 170, short_arc_quad: 170, stand_slr: -30, stand_abduction: -30, stand_extension: -30, stand_high_knee: -30, stand_curl: -30, nordic: 40, single_hop: -30, triple_hop: -30, walk_10m: -30, stand_tke: -30, mini_squat: -30, wall_squat: -30, heel_raise: -30 }[exercise.id] ?? -30;
+      const minX = Math.min(20, ...points.map(p => p.x - 35));
+      const maxX = Math.max(620, ...points.map(p => p.x + 42));
+      const minY = Math.min(cameraTop, ...points.map(p => p.y - 35));
+      const maxY = Math.max(445, ...points.map(p => p.y + 25));
+      const scale = Math.min((width - 12) / (maxX - minX), (height - 12) / (maxY - minY));
+      const offsetX = (width - (maxX - minX) * scale) / 2 - minX * scale;
+      const offsetY = (height - (maxY - minY) * scale) / 2 - minY * scale;
+      ctx.save(); ctx.translate(offsetX, offsetY); ctx.scale(scale, scale);
+      const line = (a, b, size, color, opacity = 1) => { ctx.save(); ctx.globalAlpha = opacity; ctx.strokeStyle = color; ctx.lineWidth = size; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); ctx.restore(); };
+      const circle = (p, radius, fill, stroke = null, opacity = 1) => { ctx.save(); ctx.globalAlpha = opacity; ctx.beginPath(); ctx.arc(p.x, p.y, radius, 0, 2 * Math.PI); if (fill) { ctx.fillStyle = fill; ctx.fill(); } if (stroke) { ctx.lineWidth = 2; ctx.strokeStyle = stroke; ctx.stroke(); } ctx.restore(); };
+      const rect = (x, y, w, h, r, fill) => { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); ctx.fillStyle = fill; ctx.fill(); };
+      const limb = (a, b, thickness, fill, edge) => { if (edge) line(a, b, thickness + 2, edge); line(a, b, thickness, fill); };
+      const foot = (a, direction, far = false) => {
+        const mode = exercise.id === 'heel_raise' ? (far ? 'heel_raise_far' : 'heel_raise_near') : exercise.id === 'stand_tke' && !far ? 'toe_pivot' : (!pose.lying || exercise.id === 'glute_bridge' || (exercise.id === 'bridge' && !far)) ? 'planted' : (exercise.id === 'prone' || exercise.id === 'prone_raise') ? 'prone' : 'supine';
+        const { heel, toe } = footPoints(a, direction, mode);
+        limb(heel, toe, 11, far ? colors.far : colors.skin, far ? null : colors.bodyEdge); line(a, heel, 9, far ? colors.far : colors.skin);
+      };
+      const arrow = (a, b, color) => {
+        line(a, b, 2.1, color, .85); const angle = Math.atan2(b.y - a.y, b.x - a.x);
+        line(b, pt(b.x - 9 * Math.cos(angle - .45), b.y - 9 * Math.sin(angle - .45)), 2.1, color, .85);
+        line(b, pt(b.x - 9 * Math.cos(angle + .45), b.y - 9 * Math.sin(angle + .45)), 2.1, color, .85);
+      };
+      line(pt(50, pose.floor), pt(575, pose.floor), 2, colors.floor);
+      if (pose.seat) {
+        const s = pose.seat; rect(s.x - 12, s.backTop, 13, s.y - s.backTop, 6, colors.bench); rect(s.x - 16, s.y, s.width, 14, 6, colors.bench);
+        line(pt(s.x + 4, s.y + 14), pt(s.x + 4, pose.floor), 7, '#bbcfc3'); line(pt(s.x + s.width - 35, s.y + 14), pt(s.x + s.width - 35, pose.floor), 7, '#bbcfc3');
+      }
+      if (pose.bed) {
+        const b = pose.bed; rect(b.x, b.y, b.width, 14, 7, colors.bench); line(pt(b.x + 50, b.y + 14), pt(b.x + 50, pose.floor), 7, '#c2d1c8'); line(pt(b.x + b.width - 50, b.y + 14), pt(b.x + b.width - 50, pose.floor), 7, '#c2d1c8');
+      }
+      if (pose.platform) { const p = pose.platform; rect(p.x, p.y, p.width, p.floor - p.y, 5, '#b8cbbf'); line(pt(p.x + 4, p.y + 3), pt(p.x + p.width - 4, p.y + 3), 3, '#a1bbab'); }
+      if (exercise.id === 'quad') { rect(pose.knee.x - 22, pose.knee.y + 12, 44, 9, 4, colors.bench); }
+      if (exercise.id === 'wall_squat') {
+        ctx.save();
+        ctx.beginPath();
+        ctx.roundRect(320, 42, 30, pose.floor - 42, [4, 4, 0, 0]);
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#475569';
+        ctx.stroke();
+        ctx.restore();
+      }
+      // The unmeasured leg is deliberately quiet; sensors are only on the working leg.
+      if (exercise.id === 'side_lift') {
+        limb(pose.freeHip, pose.freeKnee, 23, colors.far);
+        limb(pose.freeKnee, pose.freeAnkle, 17, colors.far);
+        circle(pose.freeAnkle, 12, colors.far);
+        limb(pose.shoulder, pose.elbow, 13, colors.skin, colors.bodyEdge);
+        limb(pose.elbow, pose.hand, 10, colors.skin, colors.bodyEdge);
+      } else {
+        limb(pose.freeHip ?? pose.hip, pose.freeKnee, 23, colors.far);
+        limb(pose.freeKnee, pose.freeAnkle, 17, colors.far);
+        foot(pose.freeAnkle, directionOf(pose.freeKnee, pose.freeAnkle), true);
+      }
+      if (exercise.id === 'short_arc_quad') {
+        circle(pt(335, 382), 26, '#c0392b', '#2c3e50');
+        circle(pt(335, 382), 18, '#d9534f', null, 0.45);
+        line(pt(316, 382), pt(354, 382), 2, 'rgba(255, 255, 255, 0.5)');
+      }
+      limb(pose.hip, pose.shoulder, 40, colors.clothes, colors.bodyEdge);
+      line(pose.shoulder, mix(pose.shoulder, pose.head, .55), 15, colors.skin);
+      circle(pose.head, 21, colors.skin, colors.bodyEdge);
+      limb(pose.hip, pose.knee, 30, colors.body, colors.bodyEdge);
+      limb(pose.hip, mix(pose.hip, pose.knee, .3), 34, colors.clothes);
+      limb(pose.knee, pose.ankle, 23, colors.skin, colors.bodyEdge);
+      if (exercise.id === 'side_lift') {
+        circle(pose.ankle, 12, colors.skin, colors.bodyEdge);
+      } else {
+        foot(pose.ankle, pose.shankDirection);
+      }
+      if (exercise.id === 'quad') {
+        const p = mix(pose.hip, pose.knee, .57); circle(p, 26 + 5 * pose.activation, colors.thigh, null, .12 + .17 * pose.activation);
+        line(mix(pose.hip, pose.knee, .28), mix(pose.hip, pose.knee, .78), 14, colors.thigh, .12 + .2 * pose.activation);
+      }
+      if (exercise.id === 'side_lift') {
+        limb(pose.shoulder, pose.topArmElbow, 13, colors.skin, colors.bodyEdge);
+        limb(pose.topArmElbow, pose.topArmHand, 10, colors.skin, colors.bodyEdge);
+      } else {
+        limb(pose.shoulder, pose.elbow, 13, colors.skin, colors.bodyEdge);
+        limb(pose.elbow, pose.hand, 10, colors.skin, colors.bodyEdge);
+      }
+      circle(pose.knee, 8, '#edf3ef', colors.bodyEdge);
+      circle(pose.hip, 6, colors.clothes);
+
+      const bands = [];
+      function band(a, b, number, color, thick) {
+        const p = mix(a, b, .56), direction = Math.atan2(b.y - a.y, b.x - a.x);
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(direction);
+        rect(-8, -thick / 2 - 3, 16, thick + 6, 4, color);
+        rect(-10, -12, 20, 24, 6, colors.ink); rect(-6, -8, 12, 12, 3, colors.white);
+        circle(pt(0, 7), 2, color); ctx.restore();
+        bands.push({ p, direction, number, color });
+        if (state.axes && detailed) arrow(mix(a, b, .18), mix(a, b, .88), color);
+      }
+      if (exercise.id === 'heel_raise') {
+        band(pose.freeKnee, pose.freeAnkle, 2, colors.shank, 17);
+        band(pose.knee, pose.ankle, 1, colors.thigh, 23);
+      } else {
+        band(pose.hip, pose.knee, 1, colors.thigh, 30);
+        if (exercise.id === 'glute_bridge') {
+          band(pose.freeHip, pose.freeKnee, 2, colors.shank, 24);
+        } else if (exercise.rings === 2) {
+          band(pose.knee, pose.ankle, 2, colors.shank, 23);
+        }
+      }
+      canvas.dataset.angleArcDegrees = '';
+      if (exercise.measure !== 'emg') {
+        const isKnee = exercise.measure === 'knee';
+        const isNordic = exercise.id === 'nordic';
+        const isHeelRaise = exercise.id === 'heel_raise';
+        const center = isHeelRaise ? pt(426, 417) : (isKnee || isNordic) ? pose.knee : exercise.measure === 'shank' ? pose.knee : pose.hip;
+        const facing = exercise.measure === 'shank' ? pose.shankFacing : pose.thighFacing;
+        // For single-pitch measures, use the matching horizontal projection ray.
+        // For nordic, the reference is vertical baseline (90° upward from knee) and sweeps with the leaning plank.
+        const first = isHeelRaise ? 180 : isNordic ? 90 : isKnee ? pose.thighDirection : facing === 'left' ? 180 : 0;
+        const second = isHeelRaise ? (180 - pose.heelAngle) : isNordic ? (pose.thighDirection + 180) : exercise.measure === 'thigh' ? pose.thighDirection : pose.shankDirection;
+        const difference = wrap180(second - first), radius = isHeelRaise ? 34 : (isKnee || isNordic) ? 37 : 42;
+        canvas.dataset.angleArcDegrees = Math.abs(difference).toFixed(3);
+        if (Math.abs(difference) > .2) {
+          const start = -first * rad, end = start - difference * rad;
+          ctx.save(); ctx.beginPath(); ctx.moveTo(center.x, center.y); ctx.arc(center.x, center.y, radius, start, end, difference > 0); ctx.closePath(); ctx.fillStyle = colors.angle; ctx.globalAlpha = .13; ctx.fill(); ctx.restore();
+          ctx.beginPath(); ctx.arc(center.x, center.y, radius, start, end, difference > 0); ctx.strokeStyle = colors.angle; ctx.lineWidth = 2.8; ctx.stroke();
+        }
+        if (detailed) {
+          ctx.save(); ctx.setLineDash([4, 5]); line(center, advance(center, 70, first), 1.3, colors.angle, .55); ctx.restore();
+        }
+      }
+      if (exercise.id === 'extension') {
+        const anchor = pt(pose.seat.x + 22, pose.floor - 8), connection = mix(pose.knee, pose.ankle, .85);
+        line(anchor, connection, 3.5, '#c49a4d', .8); circle(connection, 4, '#c49a4d');
+      }
+      ctx.restore();
+      // Sensor numbers use screen-space typography, independent of the figure scale.
+      if (detailed) bands.forEach(b => {
+        const nx = -Math.sin(b.direction), ny = Math.cos(b.direction);
+        const side = (exercise.id === 'heel_raise' && b.number === 2) ? -26 : 26;
+        const x = offsetX + b.p.x * scale + nx * side, y = offsetY + b.p.y * scale + ny * side;
+        ctx.beginPath(); ctx.arc(x, y, 11, 0, 2 * Math.PI); ctx.fillStyle = b.color; ctx.fill(); ctx.fillStyle = colors.white; ctx.font = '600 11px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(String(b.number), x, y);
+      });
+      const value = exercise.id === 'heel_raise' ? pose.heelAngle : exercise.id === 'nordic' ? Math.abs(wrap180(pose.thighDirection - (-90))) : exercise.measure === 'knee' ? pose.flexion : exercise.measure === 'shank' ? pose.shankPitch : pose.thighPitch;
+      canvas.dataset.thighPitch = pose.thighPitch.toFixed(3); canvas.dataset.shankPitch = pose.shankPitch.toFixed(3);
+      canvas.dataset.thighDirection = pose.thighDirection.toFixed(3); canvas.dataset.shankDirection = pose.shankDirection.toFixed(3);
+      canvas.dataset.thighFacing = pose.thighFacing; canvas.dataset.shankFacing = pose.shankFacing;
+      canvas.dataset.angleSource = 'illustrative-horizontal-directions';
+      canvas.dataset.kneeAngle = pose.flexion.toFixed(3); canvas.dataset.measure = exercise.measure; canvas.dataset.measureValue = value.toFixed(3); canvas.dataset.rings = String(exercise.rings);
+      canvas.setAttribute('aria-label', `${exercise.name}. ${exercise.rings} vòng: ${exercise.placement}. ${exercise.measure === 'emg' ? 'Phản hồi EMG minh hoạ.' : `${exercise.label}: ${deg(value)}.`} ${exercise.measure === 'knee' ? 'Góc dùng thêm hướng chiếu giả định, không chỉ hai pitch.' : ''}`);
+    }
+
+    let lastMotionStatus = '';
+    function update() {
+      const ex = exercises[state.index], pose = poseFor(ex, state.progress, state.manual ? state : null);
+      draw(mainCanvas, ex, pose, true);
+      state.thighPitch = pose.thighPitch; state.shankPitch = pose.shankPitch;
+      state.thighFacing = pose.thighFacing; state.shankFacing = pose.shankFacing;
+      thighInput.value = pose.thighPitch; shankInput.value = pose.shankPitch;
+      thighFacingInput.value = pose.thighFacing; shankFacingInput.value = pose.shankFacing;
+      get('thigh-output').textContent = deg(pose.thighPitch); get('shank-output').textContent = deg(pose.shankPitch);
+      get('progress-output').textContent = Math.round(state.progress * 100) + '%'; get('motion-progress').value = Math.round(state.progress * 1000);
+      const value = ex.id === 'heel_raise' ? pose.heelAngle : ex.id === 'nordic' ? Math.abs(wrap180(pose.thighDirection - (-90))) : ex.measure === 'knee' ? pose.flexion : ex.measure === 'shank' ? pose.shankPitch : pose.thighPitch;
+      get('angle-output').textContent = ex.measure === 'emg' ? (pose.activation > .5 ? 'Gồng' : 'Nghỉ') : deg(value).replace('°', '');
+      get('angle-unit').hidden = ex.measure === 'emg';
+      get('live-thigh-row').hidden = ex.measure !== 'knee' && ex.measure !== 'thigh' && ex.id !== 'heel_raise';
+      get('live-shank-row').hidden = ex.measure !== 'knee' && ex.measure !== 'shank' && ex.id !== 'glute_bridge';
+      get('live-thigh-row').querySelector('span').textContent = ex.id === 'heel_raise' ? 'Góc nhón cẳng chân gần' : 'Pitch đùi';
+      get('live-shank-row').querySelector('span').textContent = ex.id === 'glute_bridge' ? 'Pitch đùi xa' : ex.id === 'heel_raise' ? 'Góc nhón cẳng chân xa' : 'Pitch cẳng chân';
+      get('live-equation-detail').hidden = ex.measure !== 'emg';
+      get('live-thigh-pitch').textContent = deg(pose.thighPitch);
+      get('live-shank-pitch').textContent = deg(pose.shankPitch);
+      get('direction-note').hidden = ex.measure === 'emg';
+      if (ex.id === 'heel_raise') {
+        get('direction-note').textContent = 'Hai gối khóa thẳng 0°; hai vòng cảm biến ở hai bắp chân theo dõi góc nhón gót đối xứng quanh mũi chân (0°–58°).';
+      } else if (ex.measure === 'knee') {
+        const candidates = kneeAngleCandidates(pose.thighPitch, pose.shankPitch);
+        get('direction-note').textContent = candidates.length > 1
+          ? `Chỉ hai pitch: có thể là ${candidates.map(deg).join(' hoặc ')}. Hình chọn ${deg(pose.flexion)} theo hướng chiếu giả định.`
+          : 'Góc khớp được dựng trong mặt phẳng 2D. Hướng trong hình không phải dữ liệu cảm biến thật.';
+      } else get('direction-note').textContent = 'Pitch nằm trong ±90°. Hướng chiếu ngang chỉ là giả định để vẽ, không thay đổi số pitch.';
+      const stageIndex = state.progress < .07 || state.progress > .94 ? 0 : state.progress < .43 ? 1 : state.progress < .57 ? 2 : 3;
+      const status = state.manual ? 'Tư thế kéo tay' : ex.id === 'quad' ? (pose.activation > .5 ? 'Giữ gồng · 3 giây' : 'Thả lỏng') : ex.stages[stageIndex];
+      if (status !== lastMotionStatus) { get('motion-status').textContent = status; lastMotionStatus = status; }
+      get('mode-label').textContent = state.manual ? 'PITCH ±90° · HƯỚNG GIẢ ĐỊNH' : 'CHU KỲ MINH HOẠ';
+      get('play-button').textContent = state.playing ? 'Ⅱ Tạm dừng' : '▶ Chạy'; get('play-button').setAttribute('aria-pressed', String(state.playing));
+      get('overview-pause').textContent = state.galleryPlaying ? 'Ⅱ Dừng tất cả' : '▶ Chạy tất cả'; get('overview-pause').setAttribute('aria-pressed', String(state.galleryPlaying));
+    }
+
+    const thumbnailCanvases = [];
+    let printMode = false;
+    function updateGallery() {
+      exercises.forEach((ex, i) => {
+        const progress = printMode ? .5 : state.galleryProgress;
+        draw(thumbnailCanvases[i], ex, poseFor(ex, progress), false);
+      });
+    }
+    function select(index, announce = true) {
+      state.index = index; state.progress = 0; state.manual = false; state.playing = false;
+      const ex = exercises[index];
+      get('exercise-title').textContent = ex.name; get('exercise-subtitle').textContent = ex.subtitle; get('phase-tag').textContent = 'Phase ' + ex.phase; get('ring-count').textContent = ex.rings;
+      get('measure-tag').textContent = ex.label; get('angle-label').textContent = ex.label; get('measurement-note').textContent = ex.note;
+      get('thigh-placement').textContent = ex.id === 'heel_raise' ? 'Vòng 1 · Cẳng chân gần' : ex.id === 'glute_bridge' ? 'Đùi gần' : ex.id === 'bridge' ? 'Đùi chân chống sàn' : ['squat', 'step'].includes(ex.id) ? 'Đùi chân trụ' : ex.id === 'raise' ? 'Đùi chân nâng' : ['prone_raise', 'stand_abduction', 'stand_extension'].includes(ex.id) ? 'Đùi sau · chân nâng' : ex.id === 'side_lift' ? 'Đùi ngoài · chân nâng' : ex.id === 'stand_slr' ? 'Đùi trước · chân nâng' : ['nordic', 'short_arc_quad', 'stand_tke'].includes(ex.id) ? 'Đùi trước · chân tập' : ['single_hop', 'triple_hop'].includes(ex.id) ? 'Đùi trước · chân nhảy' : ['walk_10m', 'mini_squat', 'wall_squat'].includes(ex.id) ? 'Đùi trước · chân theo dõi' : 'Đùi trước';
+      get('shank-placement').textContent = ex.id === 'heel_raise' ? 'Vòng 2 · Cẳng chân xa' : ex.id === 'glute_bridge' ? 'Đùi xa (Đối bên)' : ex.id === 'bridge' ? 'Cẳng chân chống sàn' : ['squat', 'step'].includes(ex.id) ? 'Cẳng chân trụ' : ex.id === 'nordic' ? 'Cẳng chân cố định trên thảm' : ['short_arc_quad', 'stand_tke'].includes(ex.id) ? 'Cẳng chân · chân tập' : ['single_hop', 'triple_hop'].includes(ex.id) ? 'Cẳng chân · chân nhảy' : ['walk_10m', 'mini_squat', 'wall_squat'].includes(ex.id) ? 'Cẳng chân · chân theo dõi' : 'Cẳng chân';
+      get('thigh-legend').innerHTML = `<i class="swatch thigh" aria-hidden="true"></i>${ex.id === 'heel_raise' ? '1 · Vòng cẳng chân gần' : '1 · Vòng đùi'}`;
+      get('shank-legend').innerHTML = `<i class="swatch shank" aria-hidden="true"></i>${ex.id === 'heel_raise' ? '2 · Vòng cẳng chân xa' : ex.id === 'glute_bridge' ? '2 · Vòng đùi xa' : '2 · Vòng cẳng chân'}`;
+      get('thigh-field').querySelector('.pitch-label span').textContent = ex.id === 'heel_raise' ? '1 · Góc nhón cẳng chân gần' : '1 · Pitch đùi';
+      get('shank-field').querySelector('.pitch-label span').textContent = ex.id === 'glute_bridge' ? '2 · Pitch đùi xa' : ex.id === 'heel_raise' ? '2 · Góc nhón cẳng chân xa' : '2 · Pitch cẳng chân';
+      get('thigh-role').textContent = ex.thighRole; get('shank-role').textContent = ex.shankRole;
+      get('shank-card').hidden = ex.rings === 1; get('shank-legend').hidden = ex.rings === 1; get('angle-legend').hidden = ex.measure === 'emg';
+      get('manual-panel').hidden = ex.measure === 'emg'; get('shank-field').hidden = ex.rings === 1;
+      thighInput.disabled = ex.id === 'prone'; thighFacingInput.disabled = ex.id === 'prone'; get('thigh-field').style.opacity = ex.id === 'prone' ? '.6' : '1';
+      get('control-note').textContent = ex.id === 'prone'
+        ? 'Đùi cố định; vòng đùi chỉ lấy EMG. Pitch cẳng chân được giữ trong ±90°. Hướng ngang do bạn chọn để vẽ, không suy ra từ pitch.'
+        : ex.id === 'short_arc_quad'
+        ? 'Hai vòng cảm biến (đùi trước và cẳng chân). Nằm ngửa kê đệm tròn dưới khoeo gối, đùi giữ cố định trên đệm. Kéo slider cẳng chân để kiểm tra góc duỗi gối từ ~73° về 0° (thẳng hàng với đùi).'
+        : ex.id === 'prone_raise'
+        ? 'Một vòng ở đùi sau. Giữ gối thẳng trong suốt động tác. Kéo slider để kiểm tra góc duỗi hông từ 0° đến 25°.'
+        : ex.id === 'side_lift'
+        ? 'Một vòng ở đùi ngoài. Nằm nghiêng, giữ gối thẳng và dang chân lên. Kéo slider để kiểm tra góc dang hông từ 0° đến 40°.'
+        : ex.id === 'stand_slr'
+        ? 'Một vòng ở đùi trước chân nâng. Đứng thẳng, giữ gối thẳng và nâng chân ra phía trước. Kéo slider để kiểm tra góc gập hông từ 0° đến 50°.'
+        : (ex.id === 'stand_abduction' || ex.id === 'stand_extension')
+        ? 'Một vòng ở đùi sau chân nâng. Đứng thẳng, giữ gối thẳng và đưa chân ra phía sau. Kéo slider để kiểm tra góc duỗi hông từ 0° đến 25°.'
+        : ex.id === 'supine_bent_raise'
+        ? 'Hai vòng cảm biến (đùi trước và cẳng chân). Nằm ngửa, giữ gối gập 90° và nâng đùi về phía bụng. Kiểm tra góc gối ổn định quanh 90° trong suốt chu kỳ.'
+        : ex.id === 'stand_high_knee'
+        ? 'Hai vòng cảm biến (đùi trước và cẳng chân). Đứng thẳng, nâng đùi lên vuông góc mặt sàn trong khi cẳng chân buông thẳng. Kiểm tra góc gập gối đạt 90° tại đỉnh nâng.'
+        : ex.id === 'glute_bridge'
+        ? 'Hai vòng cảm biến trên hai đùi. Nằm ngửa co gối, nâng đều cả hai hông. Kéo slider để kiểm tra góc nâng và độ cân bằng hai bên đùi.'
+        : ex.id === 'stand_curl'
+        ? 'Hai vòng cảm biến (đùi trước và cẳng chân). Đứng thẳng, giữ đùi cố định và gập cẳng chân ra sau. Kéo slider cẳng chân để kiểm tra góc gập gối đạt 90°–100°.'
+        : ex.id === 'nordic'
+        ? 'Một vòng ở đùi trước. Quỳ cao trên thảm, giữ thân và đùi thẳng hàng và từ từ ngả người ra trước. Kéo slider để kiểm tra góc ngả từ 0° đến 40°.'
+        : ex.id === 'stand_tke'
+        ? 'Hai vòng cảm biến (đùi trước và cẳng chân). Mũi chân cố định trên sàn. Khi chùng gối, gót chân nhấc lên; siết cơ tứ đầu để đạp thẳng gối và hạ gót chạm sàn. Kéo slider cẳng chân để kiểm tra góc duỗi gối từ 35° về 0°.'
+        : ex.id === 'mini_squat'
+        ? 'Hai vòng cảm biến (đùi trước và cẳng chân). Hai chân khuỵu gối đồng thời với độ lệch thị sai chiều sâu. Kéo slider cẳng chân để kiểm tra góc gối ngồi xổm từ 0° đến 40°.'
+        : ex.id === 'wall_squat'
+        ? 'Hai vòng cảm biến (đùi trước và cẳng chân). Lưng trượt thẳng đứng dọc theo tường, chân đặt phía trước và khuỵu sâu hơn bài ngồi xổm góc nông. Kéo slider để kiểm tra góc gối từ 0° đến 78°.'
+        : ex.id === 'heel_raise'
+        ? 'Hai vòng cảm biến gắn trên hai cẳng chân (gần và xa). Hai chân giữ thẳng gối, nhón cao gót chân lên khoảng 58° quanh mũi chân cố định trên sàn. Kéo slider để kiểm tra góc nhón gót từ 0° đến 60°.'
+        : ['single_hop', 'triple_hop', 'walk_10m'].includes(ex.id)
+        ? 'Hai vòng cảm biến (đùi trước và cẳng chân). [Bản xem trước tĩnh] Mô phỏng hiển thị tư thế chuẩn bị đứng thẳng. Bạn có thể kéo slider đùi và cẳng chân để thử nghiệm góc gối.'
+        : ex.id === 'raise'
+        ? 'Một vòng ở đùi. Chân giữ thẳng trong hình. Pitch chỉ trong ±90°; hướng ngang là giả định cho mô phỏng.'
+        : 'Kéo pitch hoặc đổi hướng sẽ dừng hoạt ảnh. Pitch không bị nhân hệ số hay kẹp để tạo tư thế. Hướng chiếu được chọn riêng; khi dùng cảm biến thật cần thêm thông tin hướng đã căn chỉnh.';
+      root.querySelectorAll('.exercise-button').forEach((button, i) => button.setAttribute('aria-pressed', String(i === index)));
+      root.querySelectorAll('.overview-card').forEach((card, i) => card.classList.toggle('selected', i === index));
+      update(); if (announce) get('interaction-status').textContent = `Đã chọn ${ex.name}, ${ex.rings} vòng, theo dõi ${ex.label.toLowerCase()}.`;
+    }
+
+    exercises.forEach((ex, index) => {
+      if (index === 0 || ex.phase !== exercises[index - 1].phase) { const label = document.createElement('div'); label.className = 'nav-phase'; label.textContent = 'Phase ' + ex.phase; get('exercise-nav').appendChild(label); }
+      const button = document.createElement('button'); button.type = 'button'; button.className = 'exercise-button'; button.setAttribute('aria-pressed', 'false'); button.dataset.exercise = ex.id;
+      button.innerHTML = `<span class="nav-number">${String(index + 1).padStart(2, '0')}</span><span><span class="nav-name">${ex.name}</span><span class="nav-mode">${ex.rings} vòng · ${ex.measure === 'emg' ? 'EMG' : ex.label}</span></span>`;
+      button.addEventListener('click', () => select(index)); get('exercise-nav').appendChild(button);
+      const card = document.createElement('article'); card.className = 'overview-card'; card.dataset.exercise = ex.id;
+      card.innerHTML = `<div class="card-top"><span>PHASE ${ex.phase} · ${String(index + 1).padStart(2, '0')}</span><span class="mini-count">${ex.rings} vòng</span></div><canvas role="img" aria-label="${ex.name}"></canvas><div class="card-content"><button type="button" class="card-title">${ex.name}</button><p>${ex.placement}</p><span class="card-measure">${ex.id === 'heel_raise' ? 'Hai vòng cẳng chân · góc nhón gót' : ex.measure === 'knee' ? 'EMG đùi + góc gối mô phỏng' : ex.measure === 'shank' ? 'EMG đùi + pitch cẳng chân' : ex.measure === 'thigh' ? 'EMG + pitch đùi' : 'EMG · giữ nguyên'}</span></div>`;
+      card.querySelector('button').addEventListener('click', () => { select(index); get('detail-monitor').scrollIntoView({ behavior: reducedMotion.matches ? 'instant' : 'smooth', block: 'start' }); });
+      get('overview').appendChild(card); thumbnailCanvases.push(card.querySelector('canvas'));
+    });
+    get('play-button').addEventListener('click', () => { if (state.manual) { state.manual = false; state.progress = 0; } state.playing = !state.playing; update(); });
+    get('reset-button').addEventListener('click', () => { state.playing = false; state.manual = false; state.progress = 0; update(); });
+    get('motion-progress').addEventListener('input', event => { state.playing = false; state.manual = false; state.progress = Number(event.target.value) / 1000; update(); });
+    for (const [input, key] of [[thighInput, 'thighPitch'], [shankInput, 'shankPitch']]) {
+      input.addEventListener('input', () => {
+        const value = Number(input.value);
+        if (input.disabled) return;
+        if (!validPitch(value)) { input.value = state[key]; get('interaction-status').textContent = 'Pitch phải nằm trong −90° đến 90°.'; return; }
+        state.playing = false; state.manual = true;
+        if (exercises[state.index].id === 'heel_raise') {
+          const clamped = clamp(value, 0, 60);
+          state.thighPitch = clamped;
+          state.shankPitch = clamped;
+        } else {
+          state[key] = value;
+        }
+        update();
+      });
+      input.addEventListener('change', () => { const ex = exercises[state.index]; get('interaction-status').textContent = `${ex.label}: ${get('angle-output').textContent} độ.`; });
+    }
+    for (const [input, key] of [[thighFacingInput, 'thighFacing'], [shankFacingInput, 'shankFacing']]) {
+      input.addEventListener('change', () => {
+        if (input.disabled || !validFacing(input.value)) return;
+        state.playing = false; state.manual = true; state[key] = input.value; update();
+        get('interaction-status').textContent = 'Đã thay đổi giả định hướng chiếu ngang. Pitch không thay đổi.';
+      });
+    }
+    get('show-axes').addEventListener('change', event => { state.axes = event.target.checked; update(); });
+    get('overview-pause').addEventListener('click', () => { state.galleryPlaying = !state.galleryPlaying; update(); });
+    get('print-button').addEventListener('click', () => window.print());
+    window.addEventListener('beforeprint', () => { printMode = true; updateGallery(); });
+    window.addEventListener('afterprint', () => { printMode = false; updateGallery(); });
+    const resize = new ResizeObserver(() => { update(); updateGallery(); }); resize.observe(get('detail-monitor')); resize.observe(get('overview'));
+    document.addEventListener('visibilitychange', () => { lastFrame = 0; });
+    let lastFrame = 0, lastPaint = 0;
+    function frame(timestamp) {
+      const elapsed = lastFrame ? Math.min(timestamp - lastFrame, 100) : 0; lastFrame = timestamp;
+      if (!document.hidden && !printMode) {
+        if (state.playing) state.progress = (state.progress + elapsed / (exercises[state.index].id === 'quad' ? 8000 : 6000)) % 1;
+        if (state.galleryPlaying) state.galleryProgress = (state.galleryProgress + elapsed / 6000) % 1;
+        if (timestamp - lastPaint >= 33.3) { if (state.playing) update(); if (state.galleryPlaying) updateGallery(); lastPaint = timestamp; }
+      }
+      requestAnimationFrame(frame);
+    }
+    // A knee-angle result requires the horizontal directions, not just pitch.
+    const checks = [[0, -90, 'right', 'right', 90], [-30, -70, 'right', 'right', 40], [-30, -70, 'right', 'left', 80], [-90, -90, 'right', 'left', 0]];
+    checks.forEach(([a, b, fa, fb, expected]) => { if (Math.abs(kneeAngle(a, b, fa, fb) - expected) > .000001) throw new Error('Invalid knee-angle convention'); });
+    window.handsVietSimulator = {
+      exercises: exercises.map(ex => ({ id: ex.id, rings: ex.rings, measure: ex.measure })),
+      kneeAngle, kneeAngleCandidates, angleBetweenDirections, pitchFromDirection, directionFromPitch, footPoints,
+      poseFor: (id, progress, manual = null) => poseFor(exercises.find(ex => ex.id === id), progress, manual)
+    };
+    function updateMetrics() {
+      const counts = root.querySelectorAll('.counts .count strong');
+      if (counts.length >= 3) {
+        counts[0].textContent = String(exercises.length);
+        counts[1].textContent = String(exercises.filter(e => e.rings === 2).length);
+        counts[2].textContent = String(exercises.filter(e => e.rings === 1).length);
+      }
+      const introH1 = root.querySelector('.intro h1');
+      if (introH1) introH1.textContent = `${exercises.length} bài tập. Một góc nhìn rõ ràng.`;
+    }
+    updateMetrics();
+    select(0, false); updateGallery(); requestAnimationFrame(frame);
+  })();
+  </script>
+</body>
+</html>

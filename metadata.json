@@ -1,0 +1,8 @@
+{
+  "name": "Remix Hands Việt · Mô phỏng 9 bài tập \u0026 vị trí vòng",
+  "description": "Mô phỏng vị trí 2 vòng cảm biến và chuyển động 9 bài tập phục hồi chức năng ACL của Hands Việt.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
